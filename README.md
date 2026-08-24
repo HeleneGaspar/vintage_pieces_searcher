@@ -1,6 +1,6 @@
 # Vintage Piece Searcher
 
-A personal tool that continuously searches Vinted for vintage pieces you're hunting for. Upload a reference image + brand, and the tool uses CLIP visual matching to find the most similar listings on Vinted.
+A tool that continuously searches secondhand marketplaces for your pieces. Upload a reference image + brand, and the tool uses CLIP visual matching to find the most similar listings on Vinted.
 
 ## How it works
 
