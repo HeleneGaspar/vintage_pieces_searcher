@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+backend/.venv/
+backend/db.sqlite3
+backend/uploads/*
+!backend/uploads/.gitkeep
+node_modules/
+frontend/dist/
+.env
+*.egg-info/
+.DS_Store
+backend/*.png
+backend/*.json
+!backend/package.json

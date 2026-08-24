@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+sqlalchemy[asyncio]
+aiosqlite
+python-multipart
+vinted-api-kit
+apscheduler
+sentence-transformers
+torch
+Pillow
+httpx
+numpy
+playwright

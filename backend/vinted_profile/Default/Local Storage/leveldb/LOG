@@ -1,0 +1,5 @@
+2026/08/24-14:35:57.364 9d591 Reusing MANIFEST /Users/helenegaspar/Vintage_pieces_searcher/backend/vinted_profile/Default/Local Storage/leveldb/MANIFEST-000001
+2026/08/24-14:35:57.366 9d591 Recovering log #3
+2026/08/24-14:35:57.366 9d591 Reusing old log /Users/helenegaspar/Vintage_pieces_searcher/backend/vinted_profile/Default/Local Storage/leveldb/000003.log 
+2026/08/24-14:37:02.595 9d594 Level-0 table #5: started
+2026/08/24-14:37:02.608 9d594 Level-0 table #5: 73297 bytes OK

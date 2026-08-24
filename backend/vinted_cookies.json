@@ -1,0 +1,373 @@
+[
+  {
+    "name": "OTAdditionalConsentString",
+    "value": "2~20.43.55.57.61.70.83.89.93.108.117.122.124.135.143.144.147.149.159.161.184.192.196.211.228.230.236.239.255.259.266.272.286.291.311.313.314.320.322.323.327.358.367.370.371.385.407.415.424.429.430.436.445.469.486.491.494.495.522.523.540.550.560.568.574.576.587.591.621.723.737.797.798.803.820.827.839.864.899.904.922.938.955.959.979.981.985.986.1003.1027.1031.1033.1046.1047.1048.1051.1053.1067.1092.1095.1097.1099.1107.1109.1126.1135.1143.1149.1152.1162.1166.1186.1188.1192.1205.1215.1220.1226.1227.1230.1252.1268.1270.1276.1284.1290.1301.1307.1312.1329.1342.1345.1356.1365.1403.1415.1416.1419.1421.1423.1440.1449.1455.1495.1512.1514.1516.1525.1540.1548.1555.1558.1570.1577.1579.1583.1584.1598.1603.1616.1638.1651.1653.1659.1660.1667.1677.1678.1682.1697.1699.1712.1716.1720.1721.1725.1732.1735.1745.1750.1753.1782.1786.1800.1808.1810.1825.1827.1832.1838.1840.1843.1845.1859.1870.1878.1880.1882.1889.1898.1911.1917.1928.1929.1942.1944.1958.1962.1963.1964.1967.1968.1969.1978.1985.1987.2003.2027.2035.2038.2039.2044.2047.2052.2056.2064.2068.2069.2072.2074.2084.2088.2090.2103.2107.2109.2115.2124.2130.2133.2135.2137.2140.2141.2147.2156.2166.2177.2186.2205.2213.2216.2219.2220.2222.2223.2224.2225.2227.2234.2251.2253.2271.2275.2279.2282.2295.2299.2309.2312.2316.2322.2325.2328.2331.2335.2336.2343.2354.2358.2359.2370.2373.2376.2377.2400.2403.2405.2406.2410.2411.2414.2415.2416.2418.2425.2427.2440.2447.2453.2461.2465.2468.2472.2477.2484.2486.2488.2498.2506.2510.2517.2526.2527.2531.2534.2535.2542.2552.2559.2564.2567.2568.2569.2571.2572.2575.2577.2579.2583.2584.2589.2595.2596.2604.2605.2609.2610.2612.2614.2621.2624.2627.2628.2629.2633.2636.2642.2643.2645.2646.2650.2651.2652.2656.2657.2658.2660.2661.2669.2670.2677.2681.2684.2687.2689.2690.2695.2698.2713.2714.2729.2739.2767.2768.2770.2772.2778.2784.2787.2791.2792.2798.2801.2805.2812.2813.2814.2816.2817.2821.2822.2824.2827.2830.2831.2832.2833.2834.2838.2839.2844.2846.2849.2850.2852.2854.2860.2862.2863.2865.2867.2869.2872.2874.2875.2878.2880.2881.2882.2884.2886.2887.2888.2889.2891.2893.2894.2895.2897.2898.2900.2901.2908.2909.2916.2917.2918.2920.2922.2923.2927.2929.2930.2931.2940.2941.2947.2949.2950.2956.2958.2961.2963.2964.2965.2966.2968.2970.2972.2973.2974.2975.2979.2980.2981.2983.2985.2986.2987.2994.2995.2997.2999.3000.3001.3002.3003.3005.3008.3009.3010.3012.3016.3017.3018.3019.3023.3028.3031.3034.3038.3043.3051.3052.3053.3055.3058.3059.3063.3066.3070.3073.3074.3075.3076.3077.3089.3090.3093.3094.3095.3097.3099.3100.3106.3107.3109.3112.3117.3119.3126.3127.3128.3130.3133.3135.3136.3137.3145.3149.3151.3153.3155.3165.3167.3169.3172.3173.3177.3182.3184.3185.3186.3187.3188.3189.3190.3194.3196.3200.3201.3209.3210.3213.3214.3215.3217.3218.3222.3223.3225.3226.3227.3228.3230.3231.3233.3235.3236.3237.3238.3240.3244.3250.3251.3253.3254.3257.3260.3266.3270.3272.3286.3288.3289.3290.3292.3293.3296.3299.3300.3306.3307.3309.3314.3315.3316.3318.3323.3324.3328.3330.3331.3531.3631.3731.3831.4131.4531.4631.4731.4831.5231.6931.7131.7235.7831.7931.8931.10231.10631.10831.11031.11531.11631.13431.13632.14034.14133.14237.15731.16831.16931.21233.21731.23031.25131.25931.26031.26631.27731.27831.28031.28332.28731.29631.30331.30532.30732.32531.33931.34231.34631.34731.36831.39131.39531.40632.41131.41531.43631.43731.43831.45931.47232.47531.48131.49231.49332.49431.50831.52831.54231.56831.56931.57131.57231.57531~dv",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1796412431
+  },
+  {
+    "name": "OptanonAlertBoxClosed",
+    "value": "2026-06-07T19:27:11.499Z",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1796412431
+  },
+  {
+    "name": "__ps_did",
+    "value": "pscrb_1673cf2f-fd4e-47c0-8a2d-68402d26b363",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1812396434
+  },
+  {
+    "name": "__ps_fva",
+    "value": "1780860434991",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1812396434
+  },
+  {
+    "name": "__ps_lu",
+    "value": "https://www.vinted.fr/",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1812396434
+  },
+  {
+    "name": "__ps_r",
+    "value": "_",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1812396434
+  },
+  {
+    "name": "eupubconsent-v2",
+    "value": "CQlbfPAQlbfPAAcABBFRCiFsAP_gAEPgAAwILNtR_G__bWlr-Tb3abpkeYxP99hr7sQxBgbIkm4FzLvW7JwCx2EZNAzatiIKmRIAu3TBIQNlHIDURUCgKIgFryDMaEyUoTNKJ6BkiBMRI2JQCFhum4pjWQCY4ur_5kc0mB-N7dr-2dzyy4hHn3a5fmS1UJCcIYesDfn8ZBKS-9IEd-x8v4v4_EbpEm8eS1n_pGtp4jc6YlM6dBmxt-TyffzPn_f7kfe7X_vc_n3zv8oXH7rr_4LMgAmGh0QRlkQCBAoCAECABQVhABQIAgAASAogIATBgQ5AwAXWESAEAKAAYIAQAAgwABAAAJAAhEAEABAIAQIBAoAAwAIAgIAGBgADABQiAQAAgOgYpgQQCBYAJEYUBggQgAJBAS2VCCQBAgrhCkWOAQQIiYKAABEAAoAAAA8LAQklBKxIIAuILoAEAAAAKIEGBFIWYAooDIFoKwJOAyNMASPMEiSHQRAEwQkZBkQmqCQeKYogAAAA.f_wACHwAAAAA.ILNtR_G__bXlv-Tb36bpkeYxf99hr7sQxBgbIsm4FzLvW7JwC32EbNEzatiYKmRIAu3TBIQNtHIjURUChKIgVrzDsaEyUoTtKJ-BkiDMRY2JQCFhum4pjWQCZ4ur_50d0mR-N7dr-2dzyy5hnv3a9fuS1UJicKYetHfn8ZBKS-_IU9_x-_4v4_MbpEm8eS1v_tGtt43c64tP6dpuxt-Tyffzfv_f72fe7X__c__33_-qXX_r7_4A",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1796412431
+  },
+  {
+    "name": "_pubcid",
+    "value": "76d24eb2-2de7-4a62-94ca-7a41c67f8459",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1804188593
+  },
+  {
+    "name": "__obref",
+    "value": "797b1996-d833-4f08-956b-6cfecedab417",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1819040492
+  },
+  {
+    "name": "_cc_id",
+    "value": "a442e3c2a6e9153ee00289551719f4c8",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1810832498
+  },
+  {
+    "name": "panoramaId",
+    "value": "fd7455e53d43efb862c2ce64a9704945a702b3194957e84025122a5b20ac1e1f",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1788109298
+  },
+  {
+    "name": "panoramaIdType",
+    "value": "panoIndiv",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1788109298
+  },
+  {
+    "name": "panoramaId_expiry",
+    "value": "1788109298527",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1788109298
+  },
+  {
+    "name": "cto_bidid",
+    "value": "8v8i5181aXFPMWhnVWxJbFFEaHhJcFJBQ1hjeHRmcjFBZGUwZ0NxQUM2M2tTOGpMYW9mQ3R3TWFDclM3TjlvZTNnVnFjd0FMVTlPM1JraG1UcmQ2MU5xQkNoR2tzTXhPYjJyeXVjUm96aEJGc0FXUSUzRA",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1821207700
+  },
+  {
+    "name": "sharedid",
+    "value": "aad02460-69ba-4a29-9b09-08160d0a317b",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1819040500
+  },
+  {
+    "name": "sharedid_cst",
+    "value": "JKxevQ%3D%3D",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1819040500
+  },
+  {
+    "name": "access_token_web",
+    "value": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjo0NTI3MDQ1MiwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc4NzUxMzE5NywiaWF0IjoxNzg3NTA1OTk3LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJwdXJwb3NlIjoiYWNjZXNzIiwic2NvcGUiOiJ1c2VyIiwic2lkIjoiOGI3ZGM0MjYtMTc4NzUwNTk5NyIsInN1YiI6IjY0OTYxMTU2IiwiY2MiOiJGUiIsImFuaWQiOiI0ZmUxN2JkOS0xODRiLTRiYWItOTVmYS0xYmIyZTg0NTc5ODMiLCJhY3QiOnsic3ViIjoiNjQ5NjExNTYifX0.xLUK5TJZAxZT2NNAvz25exi3XaTcYkgEH2fjBBeJz7BW2BlkRE4D41nm7tI7uZakDGynMOcKsEtASA82uUuvr3k0DDc41ZTadcxR9NCR9BOOsA6Jwxnx5LQ8MiDLBQVOSk_8Y47zZZZFX-N8N7pzRiK746hwFyXmWILnWRS7RWGqqkbc3Oi4aN7n3NWg3sFyMH4S5IyDEXaKXEljOVPxjAY0NnqCaGlcvZbe6Is4F4OllhjU7TtJHnoIZeR14gm9qk0QtF45hUoFhUrTbQZUqtu--5U2AqMeO7YwmySIp2tWNmZDtM4uBdHROM3LvIXCmGvc9wajGHTnT0cdM09KYA",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1788110797
+  },
+  {
+    "name": "cf_clearance",
+    "value": "kh1DDqzdKk5VEiZ8c5qMx8UQicOwJ1z.7bnh8zo_jXE-1787506818-1.2.1.1-ODrWQU3qzhK0Ft_tybvimhYLXHz6UHtDQyHvQV66W49o2peC_BkfA23P.vz4dkwqnx50YIbvpyTl_fDncbkAA3VTmuzASyp6C.zl7BkRZ4hcDq7msqJ8on7wCoqz8P3sq8AdqThINbYdOXPZcvRTbdw8viuz8igFlBXxicaWVEo7zzLBPgx3mmrp3ik37sJR.iBtI3KA11TE.e2HjFmZcChFHEEmlP3sDr7vNpdcgv4uWMj3TkwswaVxjwtlR04UKDH6Nln4v1CVU27giAVcQtTCrbV93r76iFYKf9ifs2TmGdfDJ7InYDY35AtkYMAX01_P7XmGLmIP7AfgJp__UQkUGLEwQrvcrSKIAKuISBU",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1819042818
+  },
+  {
+    "name": "__eoi",
+    "value": "ID=5e1ed179115219f1:T=1780861136:RT=1787506886:S=AA-AfjZuBHO-q9VNO8x-PdEegK4G",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1796413136
+  },
+  {
+    "name": "__gads",
+    "value": "ID=ed3ee4908fdc4522:T=1780861136:RT=1787506886:S=ALNI_MbnDt-LdGEJr3ZCt-aS_83xB_MeZw",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1814557136
+  },
+  {
+    "name": "__gpi",
+    "value": "UID=000013c0be930b9f:T=1780861136:RT=1787506886:S=ALNI_MZetZ8oPl_Azgpjr2VEjYe-INGyvQ",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1814557136
+  },
+  {
+    "name": "OptanonConsent",
+    "value": "isGpcEnabled=0&datestamp=Sun+Aug+23+2026+19%3A41%3A38+GMT%2B0200+(Central+European+Summer+Time)&version=202602.1.0&browserGpcFlag=0&isIABGlobal=false&consentId=64961156&isAnonUser=1&hosts=&interactionCount=1&prevHadToken=0&landingPath=NotLandingPage&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1%2CC0004%3A1%2CC0005%3A1%2CV2STACK42%3A1%2CC0035%3A1%2CC0038%3A1&genVendors=V5%3A1%2CV2%3A1%2CV1%3A1%2C&intType=1&crTime=1780860431680&geolocation=FR%3BIDF&AwaitingReconsent=false",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1803058898
+  },
+  {
+    "name": "_fbp",
+    "value": "fb.1.1780860435010.729030865871636202",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1795282897
+  },
+  {
+    "name": "_ga",
+    "value": "GA1.1.1325423343.1780860435",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1822066897
+  },
+  {
+    "name": "cto_bundle",
+    "value": "EIlTTl94ZyUyRjczNkU0UDFFSTVwNEk5d3RBR3JxeGppY1ZRdEpIYVklMkI1d0xVNk1Bemt3MnhHckdIaWYzVyUyRlpvbjBVYTE5b05FVVBIMDVKeGFQemVqam40R0ZPQklRQ2FwUGxoY29HYkhUJTJGcDFFUWloRm9YM01ObFYwdXlQSW84ZUlHVTFwMFUyVktVU081SGd3Q1RvTGlOUFRjQSUzRCUzRA",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1821210097
+  },
+  {
+    "name": "datadome",
+    "value": "Zz9LUmrpGomHID3TF6eqCTTDf9AowJs70kvv2q0X17HbgZ~uw8eGU~ZD9xYyyIckfCujJDhV7WgIUr8Bac7ygYIN~sOR9EcrSiP6UykkcZiFX6w7VhRQmF2oz4nzJPgF",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1819042897
+  },
+  {
+    "name": "_ga_8H12QY46R8",
+    "value": "GS2.1.s1787567399$o3$g0$t1787567399$j60$l0$h0$dk0tmH4hTiPur8mNYG7_IWS5to53epItPSA",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1822127399
+  },
+  {
+    "name": "_ga_ZJHK1N3D75",
+    "value": "GS2.1.s1787567400$o4$g0$t1787567400$j60$l0$h0$dGYUBrx2IG-FcL5yf1NDAIbx18YgKEgMxog",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1822127400
+  },
+  {
+    "name": "_gcl_au",
+    "value": "1.1.2007717040.1780860435.-.-.1787504492.262037511.1787504493.1787506897",
+    "domain": ".vinted.fr",
+    "path": "/",
+    "expires": 1788636435
+  },
+  {
+    "name": "__qca",
+    "value": "I0-739643608-1787504499174",
+    "domain": ".vinted.fr",
+    "path": "/items"
+  },
+  {
+    "name": "domain_selected",
+    "value": "true",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1815420434
+  },
+  {
+    "name": "is_shipping_fees_applied_info_banner_dismissed",
+    "value": "false",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1815420428
+  },
+  {
+    "name": "v_udt",
+    "value": "WlZhaDhZSm9hVmtLN0FZVFZSZ0VHbmVHcllUVC0tcy84Mkd6Y2ppOTBKZVRhSC0tV29pQ2ZnaGlHMkhXbkZlMVFEcUFwUT09",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1815420427
+  },
+  {
+    "name": "anonymous-locale",
+    "value": "fr",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1815420528
+  },
+  {
+    "name": "user-locale",
+    "value": "en-fr",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1815421247
+  },
+  {
+    "name": "consent_version",
+    "value": "eu",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1788109292
+  },
+  {
+    "name": "monetixads-user-session",
+    "value": "250101575373615100053736513982151230",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1788800500
+  },
+  {
+    "name": "pbjs-id5id",
+    "value": "%7B%22signature%22%3A%22ID5_AsQbi7TKU669gEwN_I2pyFb9e21RLtipR8hb03mVE-VfUb202UQd5xTJ31mvxm3zdkBnwgaFXjqYllkrsmbiJJf-vS2j4NO836aH0NYr5rnRPROFCRSgavCJQGR_KnITMhseTQyjUAwx5NDfMDO951rVnvVDiz-sFtfe6_9bjqX4HiUmAVY%22%2C%22created_at%22%3A%222026-03-09T19%3A15%3A37.883Z%22%2C%22id5_consent%22%3Atrue%2C%22original_uid%22%3A%22ID5*nL2VYqU7QK12GxNU49mdIEnMHFDESjd21l1lxJJWz4T__2qLJ3RaAAEBCmmvHFkA1uOZZrZwra84429KYqo1MNjWuEPWlXEv-iDsTg7TKhTWyPI6T9eKJcbTg9PXeHkw1wlCX0DJ52odP0jeBBdvXtbqNWN0EYpb9FnAbrToA47W3e1avY-m03JlSDr1oF881u4RR2bt42enFtk1hc9AOQ%22%2C%22universal_uid%22%3A%22ID5*N2h1AW8VdWa7paXecOUSty3aAgNMCPoGZMGBte18ofj__2qLJ3RaAAEBCmmvHFkA1uMcqEob9YIIJfHKJY3SFdjW8sdtusFFDygSQyRyp-jWyHjGvNtbaLsu039wzmPk1wmRD1UrO8ZC1wIStnM4QNbqJ4OiOyoXTWRhGGgS80XW3emaJ5s-FDg6mjHcTFCm1u5PLGOLprdrReTCORYnuA%22%2C%22link_type%22%3A2%2C%22cascade_needed%22%3Atrue%2C%22privacy%22%3A%7B%22jurisdiction%22%3A%22gdpr%22%2C%22id5_consent%22%3Atrue%7D%2C%22ext%22%3A%7B%22linkType%22%3A2%2C%22pba%22%3A%22NB8juggSr1aWtPwpfyyU3FReIVzGL68%2B5abkLtRB9Z%2FA4B7Nc9ice1dLpZqJlZ3ct9Pn6LoQuQjsDc1MCan62A%3D%3D%22%7D%2C%22cache_control%22%3A%7B%22max_age_sec%22%3A7200%7D%2C%22ids%22%3A%7B%22id5id%22%3A%7B%22eid%22%3A%7B%22source%22%3A%22id5-sync.com%22%2C%22uids%22%3A%5B%7B%22id%22%3A%22ID5*N2h1AW8VdWa7paXecOUSty3aAgNMCPoGZMGBte18ofj__2qLJ3RaAAEBCmmvHFkA1uMcqEob9YIIJfHKJY3SFdjW8sdtusFFDygSQyRyp-jWyHjGvNtbaLsu039wzmPk1wmRD1UrO8ZC1wIStnM4QNbqJ4OiOyoXTWRhGGgS80XW3emaJ5s-FDg6mjHcTFCm1u5PLGOLprdrReTCORYnuA%22%2C%22atype%22%3A1%2C%22ext%22%3A%7B%22linkType%22%3A2%2C%22pba%22%3A%22NB8juggSr1aWtPwpfyyU3FReIVzGL68%2B5abkLtRB9Z%2FA4B7Nc9ice1dLpZqJlZ3ct9Pn6LoQuQjsDc1MCan62A%3D%3D%22%7D%7D%5D%7D%7D%7D%2C%22tags%22%3A%7B%22id%22%3A%22y%22%7D%2C%22px_pbjs%22%3A%7B%221383%22%3A%7B%22signature%22%3A%22ID5_AsQbi7TKU669gEwN_I2pyFb9e21RLtipR8hb03mVE-VfUb202UQd5xTJ31mvxm3zdkBnwgaFXjqYllkrsmbiJJf-vS2j4NO836aH0NYr5rnRPROFCRSgavCJQGR_KnITMhseTQyjUAwx5NDfMDO951rVnvVDiz-sFtfe6_9bjqX4HiUmAVY%22%2C%22created_at%22%3A%222026-03-09T19%3A15%3A37.883Z%22%2C%22id5_consent%22%3Atrue%2C%22original_uid%22%3A%22ID5*nL2VYqU7QK12GxNU49mdIEnMHFDESjd21l1lxJJWz4T__2qLJ3RaAAEBCmmvHFkA1uOZZrZwra84429KYqo1MNjWuEPWlXEv-iDsTg7TKhTWyPI6T9eKJcbTg9PXeHkw1wlCX0DJ52odP0jeBBdvXtbqNWN0EYpb9FnAbrToA47W3e1avY-m03JlSDr1oF881u4RR2bt42enFtk1hc9AOQ%22%2C%22universal_uid%22%3A%22ID5*N2h1AW8VdWa7paXecOUSty3aAgNMCPoGZMGBte18ofj__2qLJ3RaAAEBCmmvHFkA1uMcqEob9YIIJfHKJY3SFdjW8sdtusFFDygSQyRyp-jWyHjGvNtbaLsu039wzmPk1wmRD1UrO8ZC1wIStnM4QNbqJ4OiOyoXTWRhGGgS80XW3emaJ5s-FDg6mjHcTFCm1u5PLGOLprdrReTCORYnuA%22%2C%22link_type%22%3A2%2C%22cascade_needed%22%3Atrue%2C%22privacy%22%3A%7B%22jurisdiction%22%3A%22gdpr%22%2C%22id5_consent%22%3Atrue%7D%2C%22ext%22%3A%7B%22linkType%22%3A2%2C%22pba%22%3A%22NB8juggSr1aWtPwpfyyU3FReIVzGL68%2B5abkLtRB9Z%2FA4B7Nc9ice1dLpZqJlZ3ct9Pn6LoQuQjsDc1MCan62A%3D%3D%22%7D%2C%22cache_control%22%3A%7B%22max_age_sec%22%3A7200%7D%2C%22ids%22%3A%7B%22id5id%22%3A%7B%22eid%22%3A%7B%22source%22%3A%22id5-sync.com%22%2C%22uids%22%3A%5B%7B%22id%22%3A%22ID5*N2h1AW8VdWa7paXecOUSty3aAgNMCPoGZMGBte18ofj__2qLJ3RaAAEBCmmvHFkA1uMcqEob9YIIJfHKJY3SFdjW8sdtusFFDygSQyRyp-jWyHjGvNtbaLsu039wzmPk1wmRD1UrO8ZC1wIStnM4QNbqJ4OiOyoXTWRhGGgS80XW3emaJ5s-FDg6mjHcTFCm1u5PLGOLprdrReTCORYnuA%22%2C%22atype%22%3A1%2C%22ext%22%3A%7B%22linkType%22%3A2%2C%22pba%22%3A%22NB8juggSr1aWtPwpfyyU3FReIVzGL68%2B5abkLtRB9Z%2FA4B7Nc9ice1dLpZqJlZ3ct9Pn6LoQuQjsDc1MCan62A%3D%3D%22%7D%7D%5D%7D%7D%7D%2C%22tags%22%3A%7B%22id%22%3A%22y%22%7D%7D%7D%7D",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1819040500
+  },
+  {
+    "name": "pbjs-id5id_cst",
+    "value": "JKxevQ%3D%3D",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1819040500
+  },
+  {
+    "name": "pbjs-id5id_last",
+    "value": "Sun%2C%2023%20Aug%202026%2017%3A01%3A40%20GMT",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1819040500
+  },
+  {
+    "name": "anonymous-iso-locale",
+    "value": "fr-FR",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1822065967
+  },
+  {
+    "name": "v_sid",
+    "value": "8b7dc426-1787505997",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1822065997
+  },
+  {
+    "name": "v_uid",
+    "value": "64961156",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1822065997
+  },
+  {
+    "name": "RoktRecogniser",
+    "value": "c9ec2f28-6db1-4b5f-8912-70e604be8b8f",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1819042034
+  },
+  {
+    "name": "_lm_id",
+    "value": "36VASGJQIUG33CI0",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1819042897
+  },
+  {
+    "name": "anon_id",
+    "value": "4fe17bd9-184b-4bab-95fa-1bb2e8457983",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1822066897
+  },
+  {
+    "name": "user-iso-locale",
+    "value": "en-FR",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1822066896
+  },
+  {
+    "name": "viewport_size",
+    "value": "1512",
+    "domain": "www.vinted.fr",
+    "path": "/",
+    "expires": 1787593297
+  },
+  {
+    "name": "non_dot_com_www_domain_cookie_buster",
+    "value": "1",
+    "domain": ".www.vinted.fr",
+    "path": "/",
+    "expires": 1790096490
+  },
+  {
+    "name": "refresh_token_web",
+    "value": "eyJraWQiOiJFNTdZZHJ1SHBsQWp1MmNObzFEb3JIM2oyN0J1NS1zX09QNVB3UGlobjVNIiwiYWxnIjoiUFMyNTYifQ.eyJhY2NvdW50X2lkIjo0NTI3MDQ1MiwiYXBwX2lkIjo0LCJhdWQiOiJmci5jb3JlLmFwaSIsImNsaWVudF9pZCI6IndlYiIsImV4cCI6MTc4ODExMDc5NywiaWF0IjoxNzg3NTA1OTk3LCJpc3MiOiJ2aW50ZWQtaWFtLXNlcnZpY2UiLCJwdXJwb3NlIjoicmVmcmVzaCIsInNjb3BlIjoidXNlciIsInNpZCI6IjhiN2RjNDI2LTE3ODc1MDU5OTciLCJzdWIiOiI2NDk2MTE1NiIsImNjIjoiRlIiLCJhbmlkIjoiNGZlMTdiZDktMTg0Yi00YmFiLTk1ZmEtMWJiMmU4NDU3OTgzIiwiYWN0Ijp7InN1YiI6IjY0OTYxMTU2In19.ilIej5PoGMfWAOOdaGhmoVi3Q0twzL3X12POOcNqB7hjp6S3ljR75Zhk6Ljy44w-vMgHTnMRA5-78b81FyZTVKjfC2BydhVrF0tGMbysGYRWrwRu1wiJEAFO3RDonw3sqvl8OKk_Pc0KAc6ez95Nptr6wcL3l3mk5lGgEmdT11hOnwdPPhLA5KnevJRqh7xO5clljwaY_k-hPcFzFsCCwUMoFchiG1uvtcGe1dekKbB79ci41AecxmbWGgIeN2bw9OCbMLbm7YGYHBIJT91UrW_nnbpsLl38nWqBO6WnYwGH7QwNhPhZbpE5PD4s_KjxJ_5sCMV2MhWb9BKFkbVfKA",
+    "domain": ".www.vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1788110797
+  },
+  {
+    "name": "_vinted_fr_session",
+    "value": "WEM3K0xJWlZ6Uzd3YW1XYWtDOWpDUmluKzNVTTdpZ091M3hKRlkzcHoyUzNOTndJeTFiN1FnejF3Q21BTVc4clptb2NoMFVsWi9kRGljZFoxZU5weG5KaHVJUnBjOXNIeGQ1dmNvaVVJUFkzL1R4MzFmUGNQWC9EdDBYQ3dVRmQzNlg0cXpzMHhUQ2RPSG9oQ0xjcXFPYitjS2drNkwyMlQwU2JQS2NxcnFJcVdPNmlCakl6Q1BpQWxyR3lXUTRHYm5pRzdDTDJzVXpkMk1lTEdpTDJXak93SWxqckdlYmRremVSNTRhbTNFK2J2S2FIR3NsbGR5RzVpc2YxUGliM2NKWmpXV2wxdmNTSGxPZ3NlZHlzNVE9PS0tZDczczI1RFk2V2dFcUUzTnc1cDV1dz09--bb4151b371cc4af1c26002fcb44ea5f6659a27da",
+    "domain": ".www.vinted.fr",
+    "path": "/",
+    "secure": true,
+    "expires": 1788111697
+  }
+]

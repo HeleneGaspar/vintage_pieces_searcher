@@ -1,0 +1,20 @@
+2026/08/24-14:34:54.363 9c620 Creating DB /Users/helenegaspar/Vintage_pieces_searcher/backend/vinted_profile/Default/IndexedDB/https_www.vinted.fr_0.indexeddb.leveldb since it was missing.
+2026/08/24-14:34:54.365 9c620 Reusing MANIFEST /Users/helenegaspar/Vintage_pieces_searcher/backend/vinted_profile/Default/IndexedDB/https_www.vinted.fr_0.indexeddb.leveldb/MANIFEST-000001
+2026/08/24-14:34:55.348 9c620 Level-0 table #5: started
+2026/08/24-14:34:55.349 9c620 Level-0 table #5: 5904 bytes OK
+2026/08/24-14:34:55.350 9c620 Delete type=0 #3
+2026/08/24-14:34:55.350 9c61d Manual compaction at level-0 from '\x00\x02\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x03\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/08/24-14:34:55.644 9c61d Level-0 table #7: started
+2026/08/24-14:34:55.645 9c61d Level-0 table #7: 4832 bytes OK
+2026/08/24-14:34:55.646 9c61d Delete type=0 #4
+2026/08/24-14:34:55.646 9c61d Manual compaction at level-0 from '\x00\x03\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x04\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/08/24-14:34:56.309 9c620 Level-0 table #9: started
+2026/08/24-14:34:56.310 9c620 Level-0 table #9: 104774 bytes OK
+2026/08/24-14:34:56.311 9c620 Delete type=0 #6
+2026/08/24-14:34:56.311 9c61d Manual compaction at level-0 from '\x00\x04\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x05\x00\x00\x00' @ 0 : 0; will stop at '\x00\x04\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 369 : 1
+2026/08/24-14:34:56.311 9c61d Compacting 1@0 + 1@1 files
+2026/08/24-14:34:56.312 9c61d Generated table #10@0: 90 keys, 78353 bytes
+2026/08/24-14:34:56.312 9c61d Compacted 1@0 + 1@1 files => 78353 bytes
+2026/08/24-14:34:56.313 9c61d compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/08/24-14:34:56.313 9c61d Delete type=2 #9
+2026/08/24-14:34:56.313 9c61d Manual compaction at level-0 from '\x00\x04\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 369 : 1 .. '\x00\x05\x00\x00\x00' @ 0 : 0; will stop at (end)
