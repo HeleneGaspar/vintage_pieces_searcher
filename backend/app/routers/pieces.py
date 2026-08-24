@@ -195,6 +195,49 @@ async def update_piece(piece_id: str, updates: PieceUpdate, db: AsyncSession = D
     )
 
 
+@router.put("/{piece_id}/image", response_model=PieceOut)
+async def update_piece_image(
+    piece_id: str,
+    image: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Piece).where(Piece.id == piece_id))
+    piece = result.scalar_one_or_none()
+    if not piece:
+        raise HTTPException(status_code=404, detail="Piece not found")
+
+    old_path = UPLOADS_DIR / piece.image_filename
+    if old_path.exists():
+        old_path.unlink()
+
+    filename, img = _save_upload(image)
+    embedding = compute_embedding(img)
+
+    piece.image_filename = filename
+    piece.image_embedding = embedding_to_bytes(embedding)
+
+    await db.commit()
+    await db.refresh(piece)
+
+    count_result = await db.execute(
+        select(func.count(SearchResult.id)).where(SearchResult.piece_id == piece.id)
+    )
+    count = count_result.scalar() or 0
+
+    return PieceOut(
+        id=piece.id,
+        brand=piece.brand,
+        image_filename=piece.image_filename,
+        category=piece.category,
+        material=piece.material,
+        description=piece.description,
+        is_active=piece.is_active,
+        created_at=piece.created_at,
+        updated_at=piece.updated_at,
+        result_count=count,
+    )
+
+
 @router.delete("/{piece_id}", status_code=204)
 async def delete_piece(piece_id: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Piece).where(Piece.id == piece_id))

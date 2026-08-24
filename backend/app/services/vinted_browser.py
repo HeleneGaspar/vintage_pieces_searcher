@@ -179,12 +179,13 @@ async def search_vinted_by_image(
                 await page.evaluate(f"window.scrollTo(0, {scroll_y})")
                 await page.wait_for_timeout(800)
 
-            # Step 5: Scrape results
-            results = await _scrape_results_from_page(page)
+            # Step 5: Scrape results (grab extra to account for brand filtering)
+            results = await _scrape_results_from_page(page, limit=30)
+            results = _filter_by_brand(results, brand)
             logger.info("Got %d results from Vinted image+brand search", len(results))
 
             await context.close()
-            return results
+            return results[:10]
 
     except Exception:
         logger.error("Browser-based Vinted search failed", exc_info=True)
@@ -208,7 +209,27 @@ async def _dismiss_cookies(page):
             continue
 
 
-async def _scrape_results_from_page(page) -> list[VintedItem]:
+def _filter_by_brand(items: list[VintedItem], brand: str) -> list[VintedItem]:
+    """Keep only items whose brand matches the search brand (fuzzy)."""
+    brand_lower = brand.lower()
+    brand_words = set(brand_lower.split())
+
+    def matches(item_brand: str) -> bool:
+        ib = item_brand.lower()
+        if brand_lower in ib or ib in brand_lower:
+            return True
+        item_words = set(ib.split())
+        shared = brand_words & item_words
+        return len(shared) >= min(2, len(brand_words))
+
+    filtered = [item for item in items if matches(item.brand)]
+    if not filtered:
+        logger.warning("Brand filter removed all results, returning unfiltered")
+        return items
+    return filtered
+
+
+async def _scrape_results_from_page(page, *, limit: int = 10) -> list[VintedItem]:
     """Extract item data from the page using JavaScript.
 
     Vinted renders item cards where the <img> is a sibling of the <a> link
@@ -216,20 +237,18 @@ async def _scrape_results_from_page(page) -> list[VintedItem]:
     contains "€", walk up to the common card ancestor, then pull the item
     link from that ancestor.
     """
-    raw_items = await page.evaluate(r"""() => {
+    raw_items = await page.evaluate(r"""(limit) => {
         const items = [];
         const seen = new Set();
 
-        // Strategy: find item images by alt-text pattern, then correlate with links
         const allImgs = document.querySelectorAll("img");
         for (const img of allImgs) {
             const alt = img.alt || "";
-            if (!alt.includes("€")) continue;   // item images have price in alt
+            if (!alt.includes("€")) continue;
 
             const src = img.src || "";
             if (!src.includes("vinted.net")) continue;
 
-            // Walk up to find a container that also has an item link
             let card = img;
             let link = null;
             for (let i = 0; i < 10; i++) {
@@ -247,7 +266,6 @@ async def _scrape_results_from_page(page) -> list[VintedItem]:
             if (seen.has(id)) continue;
             seen.add(id);
 
-            // Parse structured alt: "Title, Brand: X, Condition: Y, Size: Z, price €, ..."
             const parts = alt.split(", ");
             let title = parts[0] || "";
             let brand = "";
@@ -273,10 +291,10 @@ async def _scrape_results_from_page(page) -> list[VintedItem]:
                 item_url: href.startsWith("http") ? href : "https://www.vinted.fr" + href,
             });
 
-            if (items.length >= 10) break;
+            if (items.length >= limit) break;
         }
         return items;
-    }""")
+    }""", limit)
 
     results = []
     for item in raw_items:

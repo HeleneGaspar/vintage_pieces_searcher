@@ -52,6 +52,12 @@ export const createPiece = (data: FormData) =>
 export const updatePiece = (id: string, data: Record<string, unknown>) =>
   api.put<Piece>(`/pieces/${id}`, data).then((r) => r.data);
 
+export const updatePieceImage = (id: string, file: File) => {
+  const fd = new FormData();
+  fd.append('image', file);
+  return api.put<Piece>(`/pieces/${id}/image`, fd).then((r) => r.data);
+};
+
 export const deletePiece = (id: string) => api.delete(`/pieces/${id}`);
 
 export const searchPiece = (id: string) =>

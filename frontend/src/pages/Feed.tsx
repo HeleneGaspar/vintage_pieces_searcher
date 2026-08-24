@@ -1,11 +1,35 @@
+import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import ResultCard from '../components/ResultCard';
+import FilterBar from '../components/FilterBar';
 import { getFeed, searchAll } from '../api/client';
 
 export default function Feed() {
   const queryClient = useQueryClient();
   const { data: feed, isLoading } = useQuery({ queryKey: ['feed'], queryFn: getFeed });
+
+  const [brandFilter, setBrandFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+
+  const brands = useMemo(
+    () => [...new Set((feed ?? []).map((p) => p.brand).filter(Boolean))],
+    [feed],
+  );
+  const categories = useMemo(
+    () => [...new Set((feed ?? []).map((p) => p.category).filter((c): c is string => !!c))],
+    [feed],
+  );
+
+  const filteredFeed = useMemo(() => {
+    if (!feed) return [];
+    return feed.filter((p) => {
+      if (brandFilter && p.brand !== brandFilter) return false;
+      if (categoryFilter && p.category !== categoryFilter) return false;
+      return true;
+    });
+  }, [feed, brandFilter, categoryFilter]);
 
   const resync = useMutation({
     mutationFn: searchAll,
@@ -38,7 +62,7 @@ export default function Feed() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold tracking-tight">Feed</h1>
         <button
           onClick={() => resync.mutate()}
@@ -49,24 +73,43 @@ export default function Feed() {
         </button>
       </div>
 
-      {!feed || feed.length === 0 ? (
+      {feed && feed.length > 1 && (
+        <div className="mb-6">
+          <FilterBar
+            brands={brands}
+            categories={categories}
+            selectedBrand={brandFilter}
+            selectedCategory={categoryFilter}
+            onBrandChange={setBrandFilter}
+            onCategoryChange={setCategoryFilter}
+          />
+        </div>
+      )}
+
+      {filteredFeed.length === 0 ? (
         <div className="text-center py-24">
-          <p className="text-gray-400">No pieces tracked yet. Add your first piece to see results here.</p>
+          <p className="text-gray-400">
+            {feed && feed.length > 0
+              ? 'No pieces match your filters'
+              : 'No pieces tracked yet. Add your first piece to see results here.'}
+          </p>
         </div>
       ) : (
         <div className="space-y-14">
-          {feed.map((piece) => (
+          {filteredFeed.map((piece) => (
             <section key={piece.id}>
               <div className="flex items-start gap-6 mb-5">
-                <div className="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100">
+                <Link to={`/piece/${piece.id}`} className="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100 block hover:opacity-80 transition-opacity">
                   <img
                     src={`/uploads/${piece.image_filename}`}
                     alt={piece.brand}
                     className="w-full h-full object-cover"
                   />
-                </div>
+                </Link>
                 <div>
-                  <h2 className="text-lg font-medium text-gray-900">{piece.brand}</h2>
+                  <Link to={`/piece/${piece.id}`} className="hover:underline">
+                    <h2 className="text-lg font-medium text-gray-900">{piece.brand}</h2>
+                  </Link>
                   {piece.description && (
                     <p className="text-sm text-gray-400 mt-0.5">{piece.description}</p>
                   )}

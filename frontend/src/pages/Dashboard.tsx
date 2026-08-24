@@ -1,6 +1,8 @@
+import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import PieceCard from '../components/PieceCard';
+import FilterBar from '../components/FilterBar';
 import { getPieces, searchAll, vintedLogin, vintedLoginStatus } from '../api/client';
 
 export default function Dashboard() {
@@ -10,6 +12,27 @@ export default function Dashboard() {
     queryKey: ['vinted-login'],
     queryFn: vintedLoginStatus,
   });
+
+  const [brandFilter, setBrandFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+
+  const brands = useMemo(
+    () => [...new Set((pieces ?? []).map((p) => p.brand).filter(Boolean))],
+    [pieces],
+  );
+  const categories = useMemo(
+    () => [...new Set((pieces ?? []).map((p) => p.category).filter((c): c is string => !!c))],
+    [pieces],
+  );
+
+  const filteredPieces = useMemo(() => {
+    if (!pieces) return [];
+    return pieces.filter((p) => {
+      if (brandFilter && p.brand !== brandFilter) return false;
+      if (categoryFilter && p.category !== categoryFilter) return false;
+      return true;
+    });
+  }, [pieces, brandFilter, categoryFilter]);
 
   const resync = useMutation({
     mutationFn: searchAll,
@@ -51,7 +74,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">My Pieces</h1>
           <p className="text-sm text-gray-400 mt-1">
@@ -75,6 +98,19 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {pieces && pieces.length > 1 && (
+        <div className="mb-6">
+          <FilterBar
+            brands={brands}
+            categories={categories}
+            selectedBrand={brandFilter}
+            selectedCategory={categoryFilter}
+            onBrandChange={setBrandFilter}
+            onCategoryChange={setCategoryFilter}
+          />
+        </div>
+      )}
+
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -85,11 +121,15 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-      ) : pieces && pieces.length > 0 ? (
+      ) : filteredPieces.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {pieces.map((piece) => (
+          {filteredPieces.map((piece) => (
             <PieceCard key={piece.id} piece={piece} />
           ))}
+        </div>
+      ) : pieces && pieces.length > 0 ? (
+        <div className="text-center py-24">
+          <p className="text-gray-400">No pieces match your filters</p>
         </div>
       ) : (
         <div className="text-center py-24">
