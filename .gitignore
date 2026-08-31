@@ -4,6 +4,7 @@ __pycache__/
 .venv/
 backend/.venv/
 backend/db.sqlite3
+backend/*.db
 backend/uploads/*
 !backend/uploads/.gitkeep
 node_modules/

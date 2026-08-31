@@ -1,13 +1,21 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import PieceCard from '../components/PieceCard';
 import FilterBar from '../components/FilterBar';
 import { getPieces, searchAll, vintedLogin, vintedLoginStatus } from '../api/client';
 
+function Spinner({ message }: { message: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20">
+      <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+      <p className="text-sm text-gray-400 mt-4">{message}</p>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const queryClient = useQueryClient();
-  const { data: pieces, isLoading } = useQuery({ queryKey: ['pieces'], queryFn: getPieces });
   const { data: loginStatus } = useQuery({
     queryKey: ['vinted-login'],
     queryFn: vintedLoginStatus,
@@ -15,6 +23,20 @@ export default function Dashboard() {
 
   const [brandFilter, setBrandFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [syncing, setSyncing] = useState(false);
+
+  const [pendingSearch, setPendingSearch] = useState(false);
+
+  const { data: pieces, isLoading } = useQuery({
+    queryKey: ['pieces'],
+    queryFn: getPieces,
+    refetchInterval: syncing || pendingSearch ? 5000 : false,
+  });
+
+  useEffect(() => {
+    const hasPending = pieces?.some((p) => p.result_count === 0) ?? false;
+    setPendingSearch(hasPending);
+  }, [pieces]);
 
   const brands = useMemo(
     () => [...new Set((pieces ?? []).map((p) => p.brand).filter(Boolean))],
@@ -27,18 +49,25 @@ export default function Dashboard() {
 
   const filteredPieces = useMemo(() => {
     if (!pieces) return [];
-    return pieces.filter((p) => {
-      if (brandFilter && p.brand !== brandFilter) return false;
-      if (categoryFilter && p.category !== categoryFilter) return false;
-      return true;
-    });
+    return pieces
+      .filter((p) => {
+        if (brandFilter && p.brand !== brandFilter) return false;
+        if (categoryFilter && p.category !== categoryFilter) return false;
+        return true;
+      })
+      .sort((a, b) => b.unseen_count - a.unseen_count);
   }, [pieces, brandFilter, categoryFilter]);
 
   const resync = useMutation({
     mutationFn: searchAll,
     onSuccess: (data) => {
-      toast.success(data.message);
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ['pieces'] }), 10000);
+      toast.success(data.message + ' — refreshing results…');
+      setSyncing(true);
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['pieces'] });
+        queryClient.invalidateQueries({ queryKey: ['notifications'] });
+        setSyncing(false);
+      }, 30000);
     },
     onError: () => toast.error('Search failed'),
   });
@@ -111,7 +140,11 @@ export default function Dashboard() {
         </div>
       )}
 
-      {isLoading ? (
+      {syncing && (
+        <Spinner message="Searching all pieces on Vinted…" />
+      )}
+
+      {!syncing && isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="animate-pulse">
@@ -121,17 +154,17 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-      ) : filteredPieces.length > 0 ? (
+      ) : !syncing && filteredPieces.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredPieces.map((piece) => (
             <PieceCard key={piece.id} piece={piece} />
           ))}
         </div>
-      ) : pieces && pieces.length > 0 ? (
+      ) : !syncing && pieces && pieces.length > 0 ? (
         <div className="text-center py-24">
           <p className="text-gray-400">No pieces match your filters</p>
         </div>
-      ) : (
+      ) : !syncing && !isLoading ? (
         <div className="text-center py-24">
           <p className="text-gray-400 mb-4">No pieces yet</p>
           <a
@@ -141,7 +174,7 @@ export default function Dashboard() {
             Add your first piece
           </a>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -1,12 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import ResultCard from '../components/ResultCard';
-import { deletePiece, getPiece, searchPiece, updatePiece, updatePieceImage } from '../api/client';
-
-const DEFAULT_CATEGORIES = ['Top', 'Jacket', 'Coat', 'Skirt', 'Dress', 'Trousers'];
-const DEFAULT_MATERIALS = ['Leather', 'Silk', 'Satin', 'Wool', 'Nylon', 'Cotton'];
+import { deletePiece, getPiece, markResultsSeen, searchPiece, updatePiece, updatePieceImage } from '../api/client';
+import { usePieceOptions } from '../hooks/usePieceOptions';
 
 function PencilIcon({ className }: { className?: string }) {
   return (
@@ -24,10 +22,31 @@ function TrashIcon({ className }: { className?: string }) {
   );
 }
 
+function SearchingOrEmpty({ piece }: { piece: { created_at: string } }) {
+  const ageMs = Date.now() - new Date(piece.created_at).getTime();
+  const isRecent = ageMs < 120_000;
+
+  if (isRecent) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+        <p className="text-sm text-gray-400 mt-4">Searching Vinted…</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-center py-16">
+      <p className="text-gray-400">No results yet. Hit Resync to search.</p>
+    </div>
+  );
+}
+
 export default function PieceDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { categories, materials: materialsList } = usePieceOptions();
 
   const [editing, setEditing] = useState(false);
   const [brand, setBrand] = useState('');
@@ -43,15 +62,39 @@ export default function PieceDetail() {
     queryKey: ['piece', id],
     queryFn: () => getPiece(id!),
     enabled: !!id,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (data && data.results.length === 0) return 3000;
+      return false;
+    },
   });
+
+  // Mark results as seen when viewing the piece
+  useEffect(() => {
+    if (piece && piece.unseen_count > 0) {
+      markResultsSeen(id!).then(() => {
+        queryClient.invalidateQueries({ queryKey: ['notifications'] });
+        queryClient.invalidateQueries({ queryKey: ['pieces'] });
+      });
+    }
+  }, [piece?.id, piece?.unseen_count]);
 
   const resync = useMutation({
     mutationFn: () => searchPiece(id!),
     onSuccess: (data) => {
       toast.success(data.message);
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ['piece', id] }), 3000);
+      queryClient.invalidateQueries({ queryKey: ['piece', id] });
+      queryClient.invalidateQueries({ queryKey: ['pieces'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
-    onError: () => toast.error('Search failed'),
+    onError: (err: any) => {
+      const detail = err?.response?.data?.detail;
+      if (err?.response?.status === 401 || detail?.includes('session expired')) {
+        toast.error('Vinted session expired. Please reconnect to Vinted.', { duration: 6000 });
+      } else {
+        toast.error('Search failed');
+      }
+    },
   });
 
   const remove = useMutation({
@@ -127,14 +170,6 @@ export default function PieceDetail() {
       </div>
     );
   }
-
-  const categories = DEFAULT_CATEGORIES.includes(piece.category ?? '')
-    ? DEFAULT_CATEGORIES
-    : [...DEFAULT_CATEGORIES, ...(piece.category ? [piece.category] : [])];
-
-  const materialsList = DEFAULT_MATERIALS.includes(piece.material ?? '')
-    ? DEFAULT_MATERIALS
-    : [...DEFAULT_MATERIALS, ...(piece.material ? [piece.material] : [])];
 
   const imageSrc = imagePreview ?? `/uploads/${piece.image_filename}`;
 
@@ -286,23 +321,33 @@ export default function PieceDetail() {
         </div>
       </div>
 
-      <h2 className="text-lg font-medium mb-5">
-        Vinted results
-        <span className="text-gray-400 font-normal text-sm ml-2">
-          {piece.results.length} found
-        </span>
-      </h2>
-
-      {piece.results.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-          {piece.results.map((result) => (
-            <ResultCard key={result.id} result={result} className="w-full" />
-          ))}
+      {resync.isPending ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+          <p className="text-sm text-gray-400 mt-4">Searching Vinted…</p>
         </div>
+      ) : piece.results.length > 0 ? (
+        <>
+          <h2 className="text-lg font-medium mb-4">
+            Vinted results
+            <span className="text-gray-400 font-normal text-sm ml-2">
+              {piece.results.length} found
+            </span>
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+            {[...piece.results]
+              .sort((a, b) => {
+                if (a.is_favorited !== b.is_favorited) return a.is_favorited ? -1 : 1;
+                if (a.is_seen !== b.is_seen) return a.is_seen ? 1 : -1;
+                return 0;
+              })
+              .map((result) => (
+                <ResultCard key={result.id} result={result} className="w-full" />
+              ))}
+          </div>
+        </>
       ) : (
-        <div className="text-center py-16">
-          <p className="text-gray-400">No results yet. Hit Resync to search Vinted.</p>
-        </div>
+        <SearchingOrEmpty piece={piece} />
       )}
 
       {showDeleteConfirm && (

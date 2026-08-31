@@ -39,6 +39,7 @@ class SearchResult(Base):
 
     id = Column(String(32), primary_key=True, default=_new_id)
     piece_id = Column(String(32), ForeignKey("pieces.id", ondelete="CASCADE"), nullable=False)
+    source = Column(String(32), default="vinted", nullable=False)
     vinted_item_id = Column(String(64), nullable=False)
     title = Column(String(512), nullable=True)
     price = Column(Float, nullable=True)
@@ -48,6 +49,8 @@ class SearchResult(Base):
     similarity_score = Column(Float, nullable=True)
     brand = Column(String(255), nullable=True)
     size = Column(String(64), nullable=True)
+    is_favorited = Column(Boolean, default=False, nullable=False)
+    is_seen = Column(Boolean, default=True, nullable=False)
     fetched_at = Column(DateTime(timezone=True), default=_utcnow, nullable=False)
 
     piece = relationship("Piece", back_populates="results")

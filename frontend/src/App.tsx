@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Feed from './pages/Feed';
+import Favorites from './pages/Favorites';
 import AddPiece from './pages/AddPiece';
 import PieceDetail from './pages/PieceDetail';
 
@@ -29,6 +30,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/feed" element={<Feed />} />
+            <Route path="/favorites" element={<Favorites />} />
             <Route path="/add" element={<AddPiece />} />
             <Route path="/piece/:id" element={<PieceDetail />} />
           </Route>

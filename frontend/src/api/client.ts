@@ -13,6 +13,7 @@ export interface Piece {
   created_at: string;
   updated_at: string;
   result_count: number;
+  unseen_count: number;
 }
 
 export interface SearchResult {
@@ -27,6 +28,8 @@ export interface SearchResult {
   similarity_score: number | null;
   brand: string | null;
   size: string | null;
+  is_favorited: boolean;
+  is_seen: boolean;
   fetched_at: string;
 }
 
@@ -39,9 +42,23 @@ export interface SearchStatus {
   message: string;
 }
 
+export interface NotificationGroup {
+  piece_id: string;
+  brand: string;
+  image_filename: string;
+  unseen_count: number;
+}
+
+export interface NotificationsOut {
+  total_unseen: number;
+  groups: NotificationGroup[];
+}
+
 export const getPieces = () => api.get<Piece[]>('/pieces').then((r) => r.data);
 
 export const getFeed = () => api.get<PieceWithResults[]>('/pieces/feed').then((r) => r.data);
+
+export const getFavorites = () => api.get<PieceWithResults[]>('/pieces/favorites').then((r) => r.data);
 
 export const getPiece = (id: string) =>
   api.get<PieceWithResults>(`/pieces/${id}`).then((r) => r.data);
@@ -65,6 +82,15 @@ export const searchPiece = (id: string) =>
 
 export const searchAll = () =>
   api.post<SearchStatus>('/search-all').then((r) => r.data);
+
+export const toggleFavorite = (pieceId: string, resultId: string) =>
+  api.patch<SearchResult>(`/pieces/${pieceId}/results/${resultId}/favorite`).then((r) => r.data);
+
+export const markResultsSeen = (pieceId: string) =>
+  api.post<SearchStatus>(`/pieces/${pieceId}/results/mark-seen`).then((r) => r.data);
+
+export const getNotifications = () =>
+  api.get<NotificationsOut>('/notifications').then((r) => r.data);
 
 export const vintedLogin = () =>
   api.post<SearchStatus>('/vinted-login', null, { timeout: 150000 }).then((r) => r.data);

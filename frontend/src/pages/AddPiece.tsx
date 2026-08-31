@@ -4,26 +4,28 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { createPiece } from '../api/client';
-
-const DEFAULT_CATEGORIES = ['Top', 'Jacket', 'Coat', 'Skirt', 'Dress', 'Trousers'];
-const DEFAULT_MATERIALS = ['Leather', 'Silk', 'Satin', 'Wool', 'Nylon', 'Cotton'];
+import { usePieceOptions } from '../hooks/usePieceOptions';
 
 export default function AddPiece() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { categories: defaultCategories, materials: defaultMaterials } = usePieceOptions();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [brand, setBrand] = useState('');
   const [category, setCategory] = useState('');
-  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [localCategories, setLocalCategories] = useState<string[]>([]);
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const newCategoryRef = useRef<HTMLInputElement>(null);
   const [material, setMaterial] = useState('');
-  const [materials, setMaterials] = useState(DEFAULT_MATERIALS);
+  const [localMaterials, setLocalMaterials] = useState<string[]>([]);
   const [showNewMaterial, setShowNewMaterial] = useState(false);
   const [newMaterial, setNewMaterial] = useState('');
   const [description, setDescription] = useState('');
+
+  const categories = [...new Set([...defaultCategories, ...localCategories])].sort();
+  const materials = [...new Set([...defaultMaterials, ...localMaterials])].sort();
 
   const onDrop = useCallback((accepted: File[]) => {
     if (accepted.length > 0) {
@@ -132,9 +134,9 @@ export default function AddPiece() {
                     e.preventDefault();
                     const val = newCategory.trim();
                     if (val && !categories.includes(val)) {
-                      setCategories([...categories, val]);
-                      setCategory(val);
+                      setLocalCategories((prev) => [...prev, val]);
                     }
+                    if (val) setCategory(val);
                     setNewCategory('');
                     setShowNewCategory(false);
                   }
@@ -148,9 +150,9 @@ export default function AddPiece() {
                 onClick={() => {
                   const val = newCategory.trim();
                   if (val && !categories.includes(val)) {
-                    setCategories([...categories, val]);
-                    setCategory(val);
+                    setLocalCategories((prev) => [...prev, val]);
                   }
+                  if (val) setCategory(val);
                   setNewCategory('');
                   setShowNewCategory(false);
                 }}
@@ -200,9 +202,9 @@ export default function AddPiece() {
                     e.preventDefault();
                     const val = newMaterial.trim();
                     if (val && !materials.includes(val)) {
-                      setMaterials([...materials, val]);
-                      setMaterial(val);
+                      setLocalMaterials((prev) => [...prev, val]);
                     }
+                    if (val) setMaterial(val);
                     setNewMaterial('');
                     setShowNewMaterial(false);
                   }
@@ -216,9 +218,9 @@ export default function AddPiece() {
                 onClick={() => {
                   const val = newMaterial.trim();
                   if (val && !materials.includes(val)) {
-                    setMaterials([...materials, val]);
-                    setMaterial(val);
+                    setLocalMaterials((prev) => [...prev, val]);
                   }
+                  if (val) setMaterial(val);
                   setNewMaterial('');
                   setShowNewMaterial(false);
                 }}

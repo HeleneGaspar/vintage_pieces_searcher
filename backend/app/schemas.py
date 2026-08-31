@@ -29,6 +29,7 @@ class PieceOut(BaseModel):
     created_at: datetime
     updated_at: datetime
     result_count: int = 0
+    unseen_count: int = 0
 
     model_config = {"from_attributes": True}
 
@@ -45,6 +46,8 @@ class SearchResultOut(BaseModel):
     similarity_score: float | None
     brand: str | None
     size: str | None
+    is_favorited: bool
+    is_seen: bool
     fetched_at: datetime
 
     model_config = {"from_attributes": True}
@@ -57,3 +60,15 @@ class PieceWithResults(PieceOut):
 class SearchStatus(BaseModel):
     status: str
     message: str
+
+
+class NotificationGroup(BaseModel):
+    piece_id: str
+    brand: str
+    image_filename: str
+    unseen_count: int
+
+
+class NotificationsOut(BaseModel):
+    total_unseen: int
+    groups: list[NotificationGroup]

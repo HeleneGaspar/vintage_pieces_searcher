@@ -6,12 +6,27 @@ import ResultCard from '../components/ResultCard';
 import FilterBar from '../components/FilterBar';
 import { getFeed, searchAll } from '../api/client';
 
+function Spinner({ message }: { message: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20">
+      <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+      <p className="text-sm text-gray-400 mt-4">{message}</p>
+    </div>
+  );
+}
+
 export default function Feed() {
   const queryClient = useQueryClient();
-  const { data: feed, isLoading } = useQuery({ queryKey: ['feed'], queryFn: getFeed });
 
   const [brandFilter, setBrandFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [syncing, setSyncing] = useState(false);
+
+  const { data: feed, isLoading } = useQuery({
+    queryKey: ['feed'],
+    queryFn: getFeed,
+    refetchInterval: syncing ? 5000 : false,
+  });
 
   const brands = useMemo(
     () => [...new Set((feed ?? []).map((p) => p.brand).filter(Boolean))],
@@ -34,8 +49,13 @@ export default function Feed() {
   const resync = useMutation({
     mutationFn: searchAll,
     onSuccess: (data) => {
-      toast.success(data.message);
-      setTimeout(() => queryClient.invalidateQueries({ queryKey: ['feed'] }), 5000);
+      toast.success(data.message + ' — refreshing results…');
+      setSyncing(true);
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['feed'] });
+        queryClient.invalidateQueries({ queryKey: ['notifications'] });
+        setSyncing(false);
+      }, 30000);
     },
     onError: () => toast.error('Search failed'),
   });
@@ -86,7 +106,11 @@ export default function Feed() {
         </div>
       )}
 
-      {filteredFeed.length === 0 ? (
+      {syncing && (
+        <Spinner message="Searching all pieces on Vinted…" />
+      )}
+
+      {!syncing && filteredFeed.length === 0 ? (
         <div className="text-center py-24">
           <p className="text-gray-400">
             {feed && feed.length > 0
@@ -94,7 +118,7 @@ export default function Feed() {
               : 'No pieces tracked yet. Add your first piece to see results here.'}
           </p>
         </div>
-      ) : (
+      ) : !syncing ? (
         <div className="space-y-14">
           {filteredFeed.map((piece) => (
             <section key={piece.id}>
@@ -115,6 +139,11 @@ export default function Feed() {
                   )}
                   <p className="text-xs text-gray-300 mt-1">
                     {piece.results.length} result{piece.results.length !== 1 ? 's' : ''}
+                    {piece.unseen_count > 0 && (
+                      <span className="ml-2 text-blue-500 font-medium">
+                        {piece.unseen_count} new
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -131,7 +160,7 @@ export default function Feed() {
             </section>
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

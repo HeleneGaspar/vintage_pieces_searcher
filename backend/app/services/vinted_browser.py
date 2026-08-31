@@ -6,8 +6,13 @@ from app.config import UPLOADS_DIR, VINTED_BASE_URL
 
 logger = logging.getLogger(__name__)
 
-CHROME_PROFILE_DIR = str(
-    Path.home() / "Library" / "Application Support" / "Google" / "Chrome" / "Profile 1"
+
+class VintedSessionExpired(Exception):
+    """Raised when Vinted session needs re-authentication."""
+    pass
+
+PLAYWRIGHT_PROFILE_DIR = str(
+    Path.home() / ".vintage-searcher" / "chrome-profile-copy"
 )
 
 _CONTEXT_ARGS = dict(
@@ -31,57 +36,62 @@ class VintedItem:
     size: str
 
 
+def _refresh_profile_copy():
+    """Copy Chrome Profile 1 to a Playwright-safe directory (skipping lock/cache files)."""
+    import shutil
+
+    chrome_profile = Path.home() / "Library" / "Application Support" / "Google" / "Chrome" / "Profile 1"
+    pw_profile = Path(PLAYWRIGHT_PROFILE_DIR)
+
+    if pw_profile.exists():
+        shutil.rmtree(pw_profile)
+
+    skip = {
+        "Cache", "Code Cache", "GPUCache", "Service Worker", "blob_storage",
+        "IndexedDB", "GCM Store", "File System", "BudgetDatabase", "databases",
+        "Session Storage", "SingletonLock", "SingletonSocket", "SingletonCookie",
+        "RunningChromeVersion",
+    }
+    shutil.copytree(chrome_profile, pw_profile, ignore=lambda _d, contents: [c for c in contents if c in skip])
+    logger.info("Refreshed Playwright profile copy from Chrome")
+
+
 async def login_to_vinted() -> bool:
-    """Open Chrome (personal profile, visible) so user can log in to Vinted."""
+    """Refresh the profile copy from Chrome and verify the Vinted session.
+
+    Copies Chrome's cookies to the Playwright profile. If Chrome is logged
+    in to Vinted, this is all that's needed — no browser window opens.
+    """
+    _refresh_profile_copy()
+
     from playwright.async_api import async_playwright
 
     async with async_playwright() as p:
         context = await p.chromium.launch_persistent_context(
-            CHROME_PROFILE_DIR,
-            headless=False,
-            channel="chrome",
-            viewport={"width": 1280, "height": 900},
-            locale="fr-FR",
-            args=["--disable-blink-features=AutomationControlled"],
+            PLAYWRIGHT_PROFILE_DIR, **_CONTEXT_ARGS
         )
         page = context.pages[0] if context.pages else await context.new_page()
 
         await page.goto(VINTED_BASE_URL, wait_until="domcontentloaded", timeout=30000)
         await page.wait_for_timeout(3000)
+
+        if "session-refresh" in page.url:
+            await context.clear_cookies()
+            await page.goto(VINTED_BASE_URL, wait_until="domcontentloaded", timeout=30000)
+            await page.wait_for_timeout(2000)
+
         await _dismiss_cookies(page)
 
         login_btn = page.locator("[data-testid='header--login-button']")
-        if await login_btn.count() == 0:
-            logger.info("Already logged in via Chrome profile")
-            await context.close()
-            return True
-
-        await page.goto(
-            f"{VINTED_BASE_URL}/member/signup/select_type?ref_url=%2F",
-            wait_until="domcontentloaded",
-            timeout=30000,
-        )
-        await page.wait_for_timeout(2000)
-        await _dismiss_cookies(page)
-
-        logger.info("Waiting for user to log in (up to 3 min)...")
-        for _ in range(90):
-            await page.wait_for_timeout(2000)
-            try:
-                url = page.url
-                on_auth = any(
-                    s in url for s in ("register", "signup", "login", "select_type")
-                )
-                login_btn = page.locator("[data-testid='header--login-button']")
-                if not on_auth and await login_btn.count() == 0:
-                    logger.info("Login successful!")
-                    await context.close()
-                    return True
-            except Exception:
-                continue
-
+        logged_in = await login_btn.count() == 0
         await context.close()
-        return False
+
+        if logged_in:
+            logger.info("Vinted session verified (logged in)")
+        else:
+            logger.warning("Not logged in to Vinted. Please log in via Chrome and retry.")
+
+        return logged_in
 
 
 async def search_vinted_by_image(
@@ -100,41 +110,76 @@ async def search_vinted_by_image(
     from playwright.async_api import async_playwright
 
     abs_image_path = str(Path(image_path).resolve())
+    Path(PLAYWRIGHT_PROFILE_DIR).mkdir(parents=True, exist_ok=True)
 
     try:
         async with async_playwright() as p:
             context = await p.chromium.launch_persistent_context(
-                CHROME_PROFILE_DIR, **_CONTEXT_ARGS
+                PLAYWRIGHT_PROFILE_DIR, **_CONTEXT_ARGS
             )
             page = context.pages[0] if context.pages else await context.new_page()
 
             logger.info("Opening Vinted (headless)...")
             await page.goto(VINTED_BASE_URL, wait_until="domcontentloaded", timeout=30000)
             await page.wait_for_timeout(2000)
+
+            # Handle expired session: Vinted redirects to /session-refresh in a loop
+            if "session-refresh" in page.url:
+                logger.warning("Session-refresh detected, refreshing profile copy from Chrome...")
+                await context.close()
+                _refresh_profile_copy()
+                context = await p.chromium.launch_persistent_context(
+                    PLAYWRIGHT_PROFILE_DIR, **_CONTEXT_ARGS
+                )
+                page = context.pages[0] if context.pages else await context.new_page()
+                await page.goto(VINTED_BASE_URL, wait_until="domcontentloaded", timeout=30000)
+                await page.wait_for_timeout(2000)
+
             await _dismiss_cookies(page)
 
+            # Check if logged in — image search requires authentication
             login_btn = page.locator("[data-testid='header--login-button']")
             if await login_btn.count() > 0:
-                logger.warning("Not logged in. Please connect your Vinted account first.")
                 await context.close()
-                return await _fallback_text_search(brand, category)
+                raise VintedSessionExpired(
+                    "Vinted session expired. Please log in to Vinted in Chrome and resync."
+                )
 
-            # Step 1: Click image search
+            # Step 1: Click image search (retry if page was slow to render)
             img_btn = page.locator('[data-testid="search-by-image-button"]').first
+            for attempt in range(3):
+                if await img_btn.count() > 0:
+                    break
+                logger.info("Image search button not found (attempt %d/3), waiting...", attempt + 1)
+                await page.wait_for_timeout(2000)
+                await _dismiss_cookies(page)
             if await img_btn.count() == 0:
-                logger.warning("Image search button not found")
+                logger.warning("Image search button not found after retries (url: %s)", page.url)
                 await context.close()
-                return await _fallback_text_search(brand, category)
+                return []
 
             await img_btn.click()
             await page.wait_for_timeout(1500)
 
-            # Step 2: Upload image
-            file_input = page.locator("input[type=file]").first
-            if await file_input.count() == 0:
-                logger.warning("File input not found")
+            # Step 2: Upload image (retry up to 3 times — the modal can be slow)
+            file_input = None
+            for attempt in range(3):
+                fi = page.locator("input[type=file]").first
+                if await fi.count() > 0:
+                    file_input = fi
+                    break
+                logger.info("File input not found (attempt %d/3), retrying...", attempt + 1)
+                # Re-click the image search button in case modal closed
+                if attempt > 0:
+                    await _dismiss_cookies(page)
+                    img_btn2 = page.locator('[data-testid="search-by-image-button"]').first
+                    if await img_btn2.count() > 0:
+                        await img_btn2.click()
+                await page.wait_for_timeout(2000)
+            if file_input is None:
+                logger.warning("File input not found after 3 attempts")
                 await context.close()
-                return await _fallback_text_search(brand, category)
+                return []
 
             await file_input.set_input_files(abs_image_path)
             logger.info("Image uploaded")
@@ -154,7 +199,7 @@ async def search_vinted_by_image(
             else:
                 logger.warning("Search button not found on crop modal")
                 await context.close()
-                return await _fallback_text_search(brand, category)
+                return []
 
             try:
                 await page.wait_for_url("**/catalog**", timeout=15000)
@@ -189,7 +234,7 @@ async def search_vinted_by_image(
 
     except Exception:
         logger.error("Browser-based Vinted search failed", exc_info=True)
-        return await _fallback_text_search(brand, category)
+        return []
 
 
 async def _dismiss_cookies(page):
@@ -209,23 +254,43 @@ async def _dismiss_cookies(page):
             continue
 
 
+def _strip_accents(s: str) -> str:
+    import unicodedata
+    return "".join(
+        c for c in unicodedata.normalize("NFD", s)
+        if unicodedata.category(c) != "Mn"
+    )
+
+
 def _filter_by_brand(items: list[VintedItem], brand: str) -> list[VintedItem]:
-    """Keep only items whose brand matches the search brand (fuzzy)."""
-    brand_lower = brand.lower()
+    """Keep only items whose scraped brand matches the search brand (fuzzy).
+
+    Title is only used as a fallback when the brand field is empty,
+    since sellers often stuff unrelated brand names into titles for SEO.
+    Handles accented characters (e.g. Chloé vs Chloe).
+    """
+    brand_lower = _strip_accents(brand.lower())
     brand_words = set(brand_lower.split())
 
-    def matches(item_brand: str) -> bool:
-        ib = item_brand.lower()
-        if brand_lower in ib or ib in brand_lower:
+    def matches(text: str) -> bool:
+        t = _strip_accents(text.lower())
+        if brand_lower in t or t in brand_lower:
             return True
-        item_words = set(ib.split())
-        shared = brand_words & item_words
+        text_words = set(t.split())
+        shared = brand_words & text_words
         return len(shared) >= min(2, len(brand_words))
 
-    filtered = [item for item in items if matches(item.brand)]
-    if not filtered:
-        logger.warning("Brand filter removed all results, returning unfiltered")
-        return items
+    def item_matches(item: VintedItem) -> bool:
+        if not item.brand.strip():
+            return False
+        return matches(item.brand)
+
+    filtered = [item for item in items if item_matches(item)]
+    if len(filtered) < len(items):
+        logger.info(
+            "Brand filter kept %d/%d items for brand '%s'",
+            len(filtered), len(items), brand,
+        )
     return filtered
 
 
@@ -272,10 +337,13 @@ async def _scrape_results_from_page(page, *, limit: int = 10) -> list[VintedItem
             let size = "";
             let price = 0;
             for (const part of parts) {
-                if (part.startsWith("Brand: ")) brand = part.slice(7);
-                else if (part.startsWith("Size: ")) size = part.slice(6);
-                else if (part.includes("€")) {
-                    const m = part.match(/([\d.,]+)\s*€/);
+                const trimmed = part.trim();
+                if (trimmed.startsWith("Brand: ")) brand = trimmed.slice(7);
+                else if (trimmed.startsWith("Marque : ") || trimmed.startsWith("Marque: ")) brand = trimmed.replace(/^Marque\s*:\s*/, "");
+                else if (trimmed.startsWith("Size: ")) size = trimmed.slice(6);
+                else if (trimmed.startsWith("Taille : ") || trimmed.startsWith("Taille: ")) size = trimmed.replace(/^Taille\s*:\s*/, "");
+                else if (trimmed.includes("€")) {
+                    const m = trimmed.match(/([\d.,]+)\s*€/);
                     if (m && !price) price = parseFloat(m[1].replace(",", "."));
                 }
             }

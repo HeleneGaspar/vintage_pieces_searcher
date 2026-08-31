@@ -1,18 +1,30 @@
+import logging
 import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile
+
+logger = logging.getLogger(__name__)
 from PIL import Image
-from sqlalchemy import func, select
+from sqlalchemy import and_, case, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.config import UPLOADS_DIR
 from app.database import get_db
 from app.models import Piece, SearchResult
-from app.schemas import PieceOut, PieceUpdate, PieceWithResults, SearchResultOut, SearchStatus
+from app.schemas import (
+    NotificationGroup,
+    NotificationsOut,
+    PieceOut,
+    PieceUpdate,
+    PieceWithResults,
+    SearchResultOut,
+    SearchStatus,
+)
 from app.services.clip_matcher import compute_embedding, embedding_to_bytes
 from app.services.searcher import search_all_pieces, search_for_piece
+from app.services.vinted_browser import VintedSessionExpired
 
 router = APIRouter(prefix="/api/pieces", tags=["pieces"])
 
@@ -25,6 +37,22 @@ def _save_upload(file: UploadFile) -> tuple[str, Image.Image]:
     path.write_bytes(contents)
     img = Image.open(path).convert("RGB")
     return filename, img
+
+
+def _piece_out(piece: Piece, result_count: int, unseen_count: int = 0) -> PieceOut:
+    return PieceOut(
+        id=piece.id,
+        brand=piece.brand,
+        image_filename=piece.image_filename,
+        category=piece.category,
+        material=piece.material,
+        description=piece.description,
+        is_active=piece.is_active,
+        created_at=piece.created_at,
+        updated_at=piece.updated_at,
+        result_count=result_count,
+        unseen_count=unseen_count,
+    )
 
 
 @router.post("", response_model=PieceOut, status_code=201)
@@ -59,22 +87,16 @@ async def create_piece(
             result = await session.execute(select(Piece).where(Piece.id == piece_id))
             p = result.scalar_one_or_none()
             if p:
-                await search_for_piece(p, session)
+                try:
+                    await search_for_piece(p, session)
+                except VintedSessionExpired:
+                    logger.warning("Vinted session expired during initial search for %s", piece_id)
+                except Exception:
+                    logger.error("Initial search failed for %s", piece_id, exc_info=True)
 
     background_tasks.add_task(_initial_search, piece.id)
 
-    return PieceOut(
-        id=piece.id,
-        brand=piece.brand,
-        image_filename=piece.image_filename,
-        category=piece.category,
-        material=piece.material,
-        description=piece.description,
-        is_active=piece.is_active,
-        created_at=piece.created_at,
-        updated_at=piece.updated_at,
-        result_count=0,
-    )
+    return _piece_out(piece, 0)
 
 
 @router.get("", response_model=list[PieceOut])
@@ -83,29 +105,14 @@ async def list_pieces(db: AsyncSession = Depends(get_db)):
         select(
             Piece,
             func.count(SearchResult.id).label("result_count"),
+            func.sum(case((SearchResult.is_seen == False, 1), else_=0)).label("unseen_count"),
         )
         .outerjoin(SearchResult)
         .group_by(Piece.id)
         .order_by(Piece.created_at.desc())
     )
     rows = await db.execute(stmt)
-    pieces = []
-    for piece, count in rows.all():
-        pieces.append(
-            PieceOut(
-                id=piece.id,
-                brand=piece.brand,
-                image_filename=piece.image_filename,
-                category=piece.category,
-                material=piece.material,
-                description=piece.description,
-                is_active=piece.is_active,
-                created_at=piece.created_at,
-                updated_at=piece.updated_at,
-                result_count=count,
-            )
-        )
-    return pieces
+    return [_piece_out(piece, count, unseen or 0) for piece, count, unseen in rows.all()]
 
 
 @router.get("/feed", response_model=list[PieceWithResults])
@@ -120,7 +127,11 @@ async def feed(db: AsyncSession = Depends(get_db)):
     pieces = result.scalars().all()
     out = []
     for p in pieces:
-        sorted_results = sorted(p.results, key=lambda r: r.similarity_score or 0, reverse=True)
+        sorted_results = sorted(
+            p.results,
+            key=lambda r: (not r.is_favorited, r.is_seen, -(r.similarity_score or 0)),
+        )
+        unseen = sum(1 for r in p.results if not r.is_seen)
         out.append(
             PieceWithResults(
                 id=p.id,
@@ -133,7 +144,46 @@ async def feed(db: AsyncSession = Depends(get_db)):
                 created_at=p.created_at,
                 updated_at=p.updated_at,
                 result_count=len(sorted_results),
+                unseen_count=unseen,
                 results=[SearchResultOut.model_validate(r) for r in sorted_results],
+            )
+        )
+    out.sort(key=lambda p: (-p.unseen_count, p.brand.lower()))
+    return out
+
+
+@router.get("/favorites", response_model=list[PieceWithResults])
+async def get_favorites(db: AsyncSession = Depends(get_db)):
+    stmt = (
+        select(Piece)
+        .where(Piece.is_active == True)
+        .options(selectinload(Piece.results))
+        .order_by(Piece.created_at.desc())
+    )
+    result = await db.execute(stmt)
+    pieces = result.scalars().all()
+    out = []
+    for p in pieces:
+        fav_results = sorted(
+            [r for r in p.results if r.is_favorited],
+            key=lambda r: -(r.similarity_score or 0),
+        )
+        if not fav_results:
+            continue
+        out.append(
+            PieceWithResults(
+                id=p.id,
+                brand=p.brand,
+                image_filename=p.image_filename,
+                category=p.category,
+                material=p.material,
+                description=p.description,
+                is_active=p.is_active,
+                created_at=p.created_at,
+                updated_at=p.updated_at,
+                result_count=len(fav_results),
+                unseen_count=0,
+                results=[SearchResultOut.model_validate(r) for r in fav_results],
             )
         )
     return out
@@ -146,7 +196,11 @@ async def get_piece(piece_id: str, db: AsyncSession = Depends(get_db)):
     piece = result.scalar_one_or_none()
     if not piece:
         raise HTTPException(status_code=404, detail="Piece not found")
-    sorted_results = sorted(piece.results, key=lambda r: r.similarity_score or 0, reverse=True)
+    sorted_results = sorted(
+        piece.results,
+        key=lambda r: (not r.is_favorited, r.is_seen, -(r.similarity_score or 0)),
+    )
+    unseen = sum(1 for r in piece.results if not r.is_seen)
     return PieceWithResults(
         id=piece.id,
         brand=piece.brand,
@@ -158,6 +212,7 @@ async def get_piece(piece_id: str, db: AsyncSession = Depends(get_db)):
         created_at=piece.created_at,
         updated_at=piece.updated_at,
         result_count=len(sorted_results),
+        unseen_count=unseen,
         results=[SearchResultOut.model_validate(r) for r in sorted_results],
     )
 
@@ -176,23 +231,14 @@ async def update_piece(piece_id: str, updates: PieceUpdate, db: AsyncSession = D
     await db.commit()
     await db.refresh(piece)
 
-    count_result = await db.execute(
-        select(func.count(SearchResult.id)).where(SearchResult.piece_id == piece.id)
+    counts = await db.execute(
+        select(
+            func.count(SearchResult.id),
+            func.sum(case((SearchResult.is_seen == False, 1), else_=0)),
+        ).where(SearchResult.piece_id == piece.id)
     )
-    count = count_result.scalar() or 0
-
-    return PieceOut(
-        id=piece.id,
-        brand=piece.brand,
-        image_filename=piece.image_filename,
-        category=piece.category,
-        material=piece.material,
-        description=piece.description,
-        is_active=piece.is_active,
-        created_at=piece.created_at,
-        updated_at=piece.updated_at,
-        result_count=count,
-    )
+    total, unseen = counts.one()
+    return _piece_out(piece, total or 0, unseen or 0)
 
 
 @router.put("/{piece_id}/image", response_model=PieceOut)
@@ -219,23 +265,14 @@ async def update_piece_image(
     await db.commit()
     await db.refresh(piece)
 
-    count_result = await db.execute(
-        select(func.count(SearchResult.id)).where(SearchResult.piece_id == piece.id)
+    counts = await db.execute(
+        select(
+            func.count(SearchResult.id),
+            func.sum(case((SearchResult.is_seen == False, 1), else_=0)),
+        ).where(SearchResult.piece_id == piece.id)
     )
-    count = count_result.scalar() or 0
-
-    return PieceOut(
-        id=piece.id,
-        brand=piece.brand,
-        image_filename=piece.image_filename,
-        category=piece.category,
-        material=piece.material,
-        description=piece.description,
-        is_active=piece.is_active,
-        created_at=piece.created_at,
-        updated_at=piece.updated_at,
-        result_count=count,
-    )
+    total, unseen = counts.one()
+    return _piece_out(piece, total or 0, unseen or 0)
 
 
 @router.delete("/{piece_id}", status_code=204)
@@ -268,6 +305,33 @@ async def get_results(piece_id: str, db: AsyncSession = Depends(get_db)):
     return [SearchResultOut.model_validate(r) for r in results.scalars().all()]
 
 
+@router.patch("/{piece_id}/results/{result_id}/favorite", response_model=SearchResultOut)
+async def toggle_favorite(piece_id: str, result_id: str, db: AsyncSession = Depends(get_db)):
+    stmt = select(SearchResult).where(
+        and_(SearchResult.id == result_id, SearchResult.piece_id == piece_id)
+    )
+    result = await db.execute(stmt)
+    sr = result.scalar_one_or_none()
+    if not sr:
+        raise HTTPException(status_code=404, detail="Result not found")
+
+    sr.is_favorited = not sr.is_favorited
+    await db.commit()
+    await db.refresh(sr)
+    return SearchResultOut.model_validate(sr)
+
+
+@router.post("/{piece_id}/results/mark-seen", response_model=SearchStatus)
+async def mark_results_seen(piece_id: str, db: AsyncSession = Depends(get_db)):
+    await db.execute(
+        update(SearchResult)
+        .where(and_(SearchResult.piece_id == piece_id, SearchResult.is_seen == False))
+        .values(is_seen=True)
+    )
+    await db.commit()
+    return SearchStatus(status="ok", message="Results marked as seen")
+
+
 @router.post("/{piece_id}/search", response_model=SearchStatus)
 async def trigger_search(piece_id: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Piece).where(Piece.id == piece_id))
@@ -275,7 +339,13 @@ async def trigger_search(piece_id: str, db: AsyncSession = Depends(get_db)):
     if not piece:
         raise HTTPException(status_code=404, detail="Piece not found")
 
-    count = await search_for_piece(piece, db)
+    try:
+        count = await search_for_piece(piece, db)
+    except VintedSessionExpired:
+        raise HTTPException(
+            status_code=401,
+            detail="Vinted session expired. Please reconnect to Vinted.",
+        )
     return SearchStatus(status="ok", message=f"Found {count} results for '{piece.brand}'")
 
 
@@ -286,6 +356,31 @@ search_router = APIRouter(tags=["search"])
 async def trigger_search_all(background_tasks: BackgroundTasks):
     background_tasks.add_task(search_all_pieces)
     return SearchStatus(status="ok", message="Search started for all active pieces")
+
+
+@search_router.get("/api/notifications", response_model=NotificationsOut)
+async def get_notifications(db: AsyncSession = Depends(get_db)):
+    stmt = (
+        select(
+            Piece.id,
+            Piece.brand,
+            Piece.image_filename,
+            func.count(SearchResult.id).label("unseen_count"),
+        )
+        .join(SearchResult, SearchResult.piece_id == Piece.id)
+        .where(SearchResult.is_seen == False)
+        .group_by(Piece.id)
+        .order_by(func.count(SearchResult.id).desc())
+    )
+    rows = await db.execute(stmt)
+    groups = []
+    total = 0
+    for pid, brand, img, count in rows.all():
+        groups.append(NotificationGroup(
+            piece_id=pid, brand=brand, image_filename=img, unseen_count=count,
+        ))
+        total += count
+    return NotificationsOut(total_unseen=total, groups=groups)
 
 
 @search_router.post("/api/vinted-login", response_model=SearchStatus)
@@ -301,8 +396,10 @@ async def vinted_login():
 @search_router.get("/api/vinted-login/status", response_model=SearchStatus)
 async def vinted_login_status():
     from pathlib import Path
+    from app.services.vinted_browser import PLAYWRIGHT_PROFILE_DIR
 
+    pw_profile = Path(PLAYWRIGHT_PROFILE_DIR)
     chrome_profile = Path.home() / "Library" / "Application Support" / "Google" / "Chrome" / "Profile 1"
-    if chrome_profile.exists():
+    if pw_profile.exists() or chrome_profile.exists():
         return SearchStatus(status="ok", message="Chrome profile available")
     return SearchStatus(status="missing", message="Chrome profile not found")
